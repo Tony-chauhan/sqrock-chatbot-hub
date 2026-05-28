@@ -1,0 +1,20 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+
+# Databases (SQLite data should not be committed)
+chatbot.db
+chatbot.db-journal
+chatbot.db-shm
+chatbot.db-wal
+
+# PDF guidelines
+_PYTHON.pdf
+
+# OS temporary files
+.DS_Store
+Thumbs.db

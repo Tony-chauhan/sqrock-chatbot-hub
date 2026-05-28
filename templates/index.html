@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sqrock AI Chatbot Hub</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="theme-cyberpunk-nebula">
+    <div class="app-container">
+        
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 15c-2.8 0-5-2.2-5-5s2.2-5 5-5 5 2.2 5 5-2.2 5-5 5z"/>
+                        <path d="M12 6c-3.3 0-6 2.7-6 6s2.7 6 6 6 6-2.7 6-6-2.7-6-6-6zm0 10c-2.2 0-4-1.8-4-4s1.8-4 4-4 4 1.8 4 4-1.8 4-4 4z" opacity="0.3"/>
+                        <path d="M12 8v4l3 3" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <div class="logo-text">
+                        <span class="brand-sq">sq</span><span class="brand-rock">røck</span>
+                        <span class="logo-sub">IT SOLUTIONS</span>
+                    </div>
+                </div>
+                <button class="sidebar-toggle-btn mobile-only" id="sidebar-close-btn" aria-label="Close sidebar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            <button class="new-chat-btn" id="new-chat-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                <span>New Session</span>
+            </button>
+
+            <!-- Chat Threads History -->
+            <div class="history-container">
+                <h3 class="section-title">Chat Sessions</h3>
+                <div class="history-list" id="sessions-list">
+                    <!-- Dynamic session list items inserted here by JS -->
+                    <div class="sessions-placeholder">No active sessions</div>
+                </div>
+            </div>
+
+            <!-- Sidebar Footer (User Info) -->
+            <div class="sidebar-footer" id="sidebar-profile-trigger">
+                <div class="user-profile-badge">
+                    <div class="avatar user-avatar-1" id="sidebar-user-avatar"></div>
+                    <div class="user-details">
+                        <span class="user-name" id="sidebar-user-name">Sqrock Intern</span>
+                        <span class="user-status">Online</span>
+                    </div>
+                </div>
+                <button class="settings-btn-icon" aria-label="Open settings">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                </button>
+            </div>
+        </aside>
+
+        <!-- MAIN PANEL -->
+        <main class="main-panel">
+            
+            <!-- HEADER -->
+            <header class="app-header">
+                <div class="header-left">
+                    <button class="sidebar-toggle-btn" id="sidebar-open-btn" aria-label="Open sidebar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                    </button>
+                    <div class="chat-identity">
+                        <h2 class="active-session-title" id="active-session-title">Select or Create a Chat</h2>
+                        <div class="persona-indicator-wrapper" id="persona-badge-container" style="display: none;">
+                            <span class="status-dot"></span>
+                            <span class="active-persona-name" id="active-persona-display">Assistant</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="header-right">
+                    <!-- Engine Indicator -->
+                    <div class="engine-badge" id="engine-badge">
+                        <span class="engine-indicator-dot"></span>
+                        <span class="engine-name-label" id="engine-name-label">Offline Simulation</span>
+                    </div>
+
+                    <!-- TTS Narration Toggle -->
+                    <button class="header-action-btn" id="tts-narration-btn" title="Toggle Text-to-Speech Output">
+                        <svg class="tts-off-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M23 9l-6 6M17 9l6 6" stroke-linecap="round"/></svg>
+                        <svg class="tts-on-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07" stroke-linecap="round"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14" stroke-linecap="round"/></svg>
+                    </button>
+
+                    <!-- Theme Toggle Quick Button -->
+                    <button class="header-action-btn" id="quick-theme-btn" title="Change Theme Style">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/><circle cx="12" cy="12" r="4"/></svg>
+                    </button>
+
+                    <!-- Settings Button -->
+                    <button class="header-action-btn primary-action" id="settings-trigger-btn" title="Open Settings Console">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                    </button>
+                </div>
+            </header>
+
+            <!-- CHAT FEED CONTAINER -->
+            <div class="chat-viewport" id="chat-viewport">
+                <!-- Welcome/Landing Screen when no thread is selected or thread is empty -->
+                <div class="welcome-screen" id="welcome-screen">
+                    <div class="welcome-logo">
+                        <span class="welcome-badge">INTERNSHIP TASK 1</span>
+                    </div>
+                    <h1 class="welcome-title">Welcome to Sqrock AI Hub</h1>
+                    <p class="welcome-subtitle">A state-of-the-art conversational interface loaded with powerful customization, speech synthesizer, and premium glassmorphic styling.</p>
+                    
+                    <div class="persona-cards-grid">
+                        <div class="persona-card" data-persona="assistant">
+                            <div class="persona-card-header">
+                                <div class="persona-icon-box bg-assistant">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                                </div>
+                                <h3 class="persona-card-name">General Assistant</h3>
+                            </div>
+                            <p class="persona-card-desc">Helpful, friendly AI assistant. Outstanding for drafts, brainstorms, or general questions.</p>
+                            <span class="persona-select-indicator">Activate Persona</span>
+                        </div>
+
+                        <div class="persona-card" data-persona="coder">
+                            <div class="persona-card-header">
+                                <div class="persona-icon-box bg-coder">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                                </div>
+                                <h3 class="persona-card-name">Coding Coach</h3>
+                            </div>
+                            <p class="persona-card-desc">Senior Software Engineer. Generates optimized Python scripts with step-by-step logic.</p>
+                            <span class="persona-select-indicator">Activate Persona</span>
+                        </div>
+
+                        <div class="persona-card" data-persona="creative">
+                            <div class="persona-card-header">
+                                <div class="persona-icon-box bg-creative">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H7c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.04-.42 1.99-1.07 2.75z"/></svg>
+                                </div>
+                                <h3 class="persona-card-name">Creative Storyteller</h3>
+                            </div>
+                            <p class="persona-card-desc">Imaginative creative writer. Weaves descriptive science-fiction, fantasy, or roleplay tales.</p>
+                            <span class="persona-select-indicator">Activate Persona</span>
+                        </div>
+
+                        <div class="persona-card" data-persona="lifecoach">
+                            <div class="persona-card-header">
+                                <div class="persona-icon-box bg-lifecoach">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                                </div>
+                                <h3 class="persona-card-name">Empathetic Life Coach</h3>
+                            </div>
+                            <p class="persona-card-desc">A motivational counselor to organize goals, construct routines, and build habits.</p>
+                            <span class="persona-select-indicator">Activate Persona</span>
+                        </div>
+                    </div>
+
+                    <!-- Quick Prompt Suggestions -->
+                    <div class="suggestions-container">
+                        <h4 class="suggestions-title">Get Started With An Idea:</h4>
+                        <div class="suggestion-pills">
+                            <button class="suggestion-pill">"Help me write a Python function to parse JSON files safely."</button>
+                            <button class="suggestion-pill">"Tell me a short sci-fi story about a rogue chatbot."</button>
+                            <button class="suggestion-pill">"Help me structure a morning routine for maximum focus."</button>
+                            <button class="suggestion-pill">"Explain the concept of decorators in Python with an analogy."</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat history bubbles stream -->
+                <div class="messages-stream" id="messages-stream" style="display: none;">
+                    <!-- User & AI chat bubbles dynamically injected by JS -->
+                </div>
+            </div>
+
+            <!-- INPUT CONSOLE -->
+            <footer class="input-panel">
+                <form class="input-form" id="chat-input-form" onsubmit="return false;">
+                    
+                    <div class="textarea-wrapper">
+                        <!-- Microphone button for speech input -->
+                        <button type="button" class="input-utility-btn mic-btn" id="voice-input-btn" title="Voice Input (Speech-to-Text)">
+                            <svg class="mic-off-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+                            <span class="pulse-mic-ring" style="display: none;"></span>
+                        </button>
+
+                        <textarea 
+                            id="user-input-textbox" 
+                            rows="1" 
+                            placeholder="Type a message or press the microphone..." 
+                            required 
+                            autocomplete="off"
+                            maxlength="2000"
+                        ></textarea>
+                    </div>
+
+                    <!-- Action Send Button -->
+                    <button type="submit" class="submit-btn" id="send-message-btn" aria-label="Send message">
+                        <svg class="send-arrow-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                        </svg>
+                    </button>
+                </form>
+                
+                <div class="input-footer">
+                    <span>Task 1 Chatbot Hub • Sqrock IT Solutions Internship</span>
+                </div>
+            </footer>
+        </main>
+
+        <!-- CONFIGURATION MODAL (SETTINGS PANEL) -->
+        <div class="modal-overlay" id="settings-modal" style="display: none;">
+            <div class="modal-card">
+                
+                <div class="modal-header">
+                    <h2 class="modal-title">Application Console</h2>
+                    <button class="modal-close-btn" id="settings-close-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    
+                    <!-- Left Tab Navigation inside modal -->
+                    <nav class="modal-tabs">
+                        <button class="modal-tab-btn active" data-tab="general">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></nav></svg>
+                            <span>General Settings</span>
+                        </button>
+                        <button class="modal-tab-btn" data-tab="engine">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                            <span>AI Engine API</span>
+                        </button>
+                        <button class="modal-tab-btn" data-tab="about">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                            <span>Internship Info</span>
+                        </button>
+                    </nav>
+
+                    <!-- Right Tab Content -->
+                    <div class="modal-content-area">
+                        
+                        <!-- TAB: GENERAL -->
+                        <div class="tab-pane active" id="tab-general">
+                            <h3 class="pane-title">User Personalization</h3>
+                            
+                            <div class="form-group">
+                                <label for="input-user-name">Intern Username</label>
+                                <input type="text" id="input-user-name" placeholder="Sqrock Intern">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Profile Avatar</label>
+                                <div class="avatar-grid">
+                                    <div class="avatar-option user-avatar-1" data-avatar="user-avatar-1"></div>
+                                    <div class="avatar-option user-avatar-2" data-avatar="user-avatar-2"></div>
+                                    <div class="avatar-option user-avatar-3" data-avatar="user-avatar-3"></div>
+                                    <div class="avatar-option user-avatar-4" data-avatar="user-avatar-4"></div>
+                                    <div class="avatar-option user-avatar-5" data-avatar="user-avatar-5"></div>
+                                    <div class="avatar-option user-avatar-6" data-avatar="user-avatar-6"></div>
+                                </div>
+                            </div>
+
+                            <h3 class="pane-title margin-top">UI Theme & Layout</h3>
+                            
+                            <div class="form-group">
+                                <label for="select-theme">Visual Interface Style</label>
+                                <select id="select-theme">
+                                    <option value="cyberpunk-nebula">🌌 Cyberpunk Nebula (Modern Neon)</option>
+                                    <option value="classic-dark">🖤 Classic Dark (Clean Obsidian)</option>
+                                    <option value="midnight-aura">🌟 Midnight Aura (Navy & Gold)</option>
+                                    <option value="sunset-glow">🌇 Sunset Glow (Coral Gradient)</option>
+                                    <option value="emerald-forest">🌿 Emerald Forest (Sage & Mint)</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="select-persona">Default Active Persona</label>
+                                <select id="select-persona">
+                                    <option value="assistant">General Assistant (All-Rounder)</option>
+                                    <option value="coder">Coding Coach (Senior Developer)</option>
+                                    <option value="creative">Creative Storyteller (Novelist)</option>
+                                    <option value="lifecoach">Empathetic Life Coach (Motivation)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- TAB: AI ENGINE -->
+                        <div class="tab-pane" id="tab-engine">
+                            <h3 class="pane-title">AI Engine Configuration</h3>
+                            <p class="pane-desc">Choose which AI provider coordinates backend responses. Offline Simulation is completely free and requires zero setup.</p>
+                            
+                            <div class="form-group">
+                                <label for="select-provider">AI Provider</label>
+                                <select id="select-provider">
+                                    <option value="mock">🤖 Offline Simulation (Persona-Based Mock Engine)</option>
+                                    <option value="openai">⚡ OpenAI GPT API (Requires own Key)</option>
+                                    <option value="gemini">♊ Google Gemini API (Requires own Key)</option>
+                                </select>
+                            </div>
+
+                            <!-- OpenAI Fields -->
+                            <div class="provider-fields" id="fields-openai" style="display: none;">
+                                <div class="form-group">
+                                    <label for="input-openai-key">OpenAI API Key</label>
+                                    <div class="password-input-wrapper">
+                                        <input type="password" id="input-openai-key" placeholder="sk-proj-...">
+                                        <button type="button" class="eye-toggle-btn" tabindex="-1">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                        </button>
+                                    </div>
+                                    <span class="input-hint">Your API Key is saved locally in the SQLite database and is never shared.</span>
+                                </div>
+                            </div>
+
+                            <!-- Gemini Fields -->
+                            <div class="provider-fields" id="fields-gemini" style="display: none;">
+                                <div class="form-group">
+                                    <label for="input-gemini-key">Google Gemini API Key</label>
+                                    <div class="password-input-wrapper">
+                                        <input type="password" id="input-gemini-key" placeholder="AIzaSy...">
+                                        <button type="button" class="eye-toggle-btn" tabindex="-1">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                        </button>
+                                    </div>
+                                    <span class="input-hint">Your API Key is saved locally in the SQLite database and is never shared.</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- TAB: ABOUT -->
+                        <div class="tab-pane" id="tab-about">
+                            <h3 class="pane-title">Sqrock IT Solutions Internship</h3>
+                            <div class="about-task-box">
+                                <div class="task-badge">Task 1 - Python & Data Science</div>
+                                <h4 class="task-title">AI Chatbot Web Application</h4>
+                                
+                                <p class="task-desc">This high-fidelity application serves as the complete project submission for **Internship Task 1**, demonstrating a robust application built with a modern backend foundation and a highly customized UI.</p>
+                                
+                                <h5 class="task-sub">Key Implemented Features:</h5>
+                                <ul class="task-features-list">
+                                    <li><strong>SQLite Database Persistence:</strong> Full local database storage of chat threads, messages, and configurations.</li>
+                                    <li><strong>Five Vibrant Themes:</strong> CSS visual style configurations using modern gradients and glassmorphic designs.</li>
+                                    <li><strong>Adaptive AI Personas:</strong> Distinct personalities (Assistant, Coach, Coder, Novelist) with corresponding simulated context.</li>
+                                    <li><strong>Speech-to-Text (STT):</strong> Microphone recognition using Web Speech APIs.</li>
+                                    <li><strong>Text-to-Speech (TTS):</strong> Clear narration of chatbot outputs.</li>
+                                    <li><strong>Rich Markdown Parsing:</strong> Frontend rendering of markdown structures (bold, lists, titles, code syntaxes).</li>
+                                </ul>
+
+                                <div class="thanks-signature">
+                                    <span>Developed by <strong>Tony Ch (Sqrock Intern)</strong></span>
+                                    <span>Submitted on: <strong>May 2026</strong></span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" id="settings-cancel-btn">Cancel</button>
+                    <button class="btn btn-primary" id="settings-save-btn">Save Changes</button>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Application Script -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
