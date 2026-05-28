@@ -276,38 +276,66 @@ def query_openai(api_key, persona_key, session_id, user_msg):
             pass
         raise Exception(f"HTTP {response.status_code}: {err_msg}")
 
+import time
+
 def query_gemini(api_key, persona_key, user_msg):
-    # Google Gemini API
+    # Google Gemini API with robust multi-model fallback and retry mechanism
     persona = PERSONAS.get(persona_key, PERSONAS['assistant'])
     prompt = f"{persona['system_prompt']}\n\nUser Query: {user_msg}"
     
-    # Switch to the flagship gemini-3.5-flash model
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key={api_key}"
-    headers = {"Content-Type": "application/json"}
-    payload = {
-        "contents": [
-            {
-                "parts": [{"text": prompt}]
-            }
-        ]
-    }
+    # List of candidate models to try in sequence if one fails or times out
+    models = ['gemini-3.5-flash', 'gemini-3.1-flash-lite', 'gemini-2.5-flash']
     
-    response = requests.post(url, headers=headers, json=payload, timeout=30)
+    last_error = None
     
-    if response.status_code == 200:
-        res_data = response.json()
-        try:
-            return res_data['candidates'][0]['content']['parts'][0]['text']
-        except (KeyError, IndexError):
-            raise Exception("Invalid API response format from Google Gemini")
-    else:
-        err_msg = response.text
-        try:
-            err_json = response.json()
-            err_msg = err_json.get('error', {}).get('message', response.text)
-        except Exception:
-            pass
-        raise Exception(f"HTTP {response.status_code}: {err_msg}")
+    for model in models:
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={api_key}"
+        headers = {"Content-Type": "application/json"}
+        payload = {
+            "contents": [
+                {
+                    "parts": [{"text": prompt}]
+                }
+            ]
+        }
+        
+        # Try up to 2 attempts for each model
+        for attempt in range(1, 3):
+            try:
+                # Use a resilient 20s timeout per request
+                response = requests.post(url, headers=headers, json=payload, timeout=20)
+                
+                if response.status_code == 200:
+                    res_data = response.json()
+                    try:
+                        return res_data['candidates'][0]['content']['parts'][0]['text']
+                    except (KeyError, IndexError):
+                        raise Exception("Invalid API response structure from Google Gemini")
+                elif response.status_code == 429:
+                    # Rate limited - wait briefly and retry
+                    time.sleep(1)
+                    last_error = f"HTTP 429 (Rate Limited) on {model}"
+                else:
+                    err_msg = response.text
+                    try:
+                        err_json = response.json()
+                        err_msg = err_json.get('error', {}).get('message', response.text)
+                    except Exception:
+                        pass
+                    last_error = f"HTTP {response.status_code} ({err_msg}) on {model}"
+                    # Hard API errors (like wrong API key) shouldn't be retried on same model
+                    break 
+                    
+            except requests.exceptions.Timeout:
+                last_error = f"Timeout (20s) on {model} (Attempt {attempt}/2)"
+                # Wait briefly before next attempt of same model
+                time.sleep(0.5)
+            except Exception as e:
+                last_error = f"Connection error ({str(e)}) on {model}"
+                break # Try next model
+                
+    # If we reached here, all models and retries failed
+    raise Exception(f"All candidate Gemini models failed. Last error: {last_error}")
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
