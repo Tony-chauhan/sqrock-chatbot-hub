@@ -4,6 +4,8 @@ An elegant, high-fidelity, and feature-rich conversational web application desig
 
 Developed by **Dharmender Chauhan**, Intern at **Sqrock IT Solutions**.
 
+**Live Demo URL:** [https://sqrock-chatbot-hub.onrender.com/](https://sqrock-chatbot-hub.onrender.com/)
+
 ---
 
 ## 🌟 Key Features
@@ -50,6 +52,8 @@ python app.py
 ### 3. Open the Dashboard
 Navigate to your local port in your web browser:
 👉 **[http://127.0.0.1:5000](http://127.0.0.1:5000)**
+
+👉 **Live Cloud URL:** [https://sqrock-chatbot-hub.onrender.com/](https://sqrock-chatbot-hub.onrender.com/)
 
 ---
 
