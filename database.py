@@ -44,7 +44,7 @@ def init_db():
     
     # Insert default settings if they don't exist
     default_settings = {
-        'user_name': 'Sqrock Intern',
+        'user_name': 'Dharmender Chauhan',
         'user_avatar': 'user-avatar-1',
         'current_theme': 'cyberpunk-nebula',
         'active_persona': 'assistant',

@@ -803,7 +803,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const openModal = () => {
             DOM.settingsModal.style.display = 'flex';
             // Sync values from state
-            DOM.inputUserName.value = state.settings.user_name || 'Sqrock Intern';
+            DOM.inputUserName.value = state.settings.user_name || 'Dharmender Chauhan';
             DOM.selectTheme.value = state.settings.current_theme || 'cyberpunk-nebula';
             DOM.selectPersona.value = state.settings.active_persona || 'assistant';
             DOM.selectProvider.value = state.settings.active_provider || 'mock';
@@ -877,7 +877,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const avatarVal = activeAvatarOpt ? activeAvatarOpt.getAttribute('data-avatar') : 'user-avatar-1';
             
             const payload = {
-                user_name: DOM.inputUserName.value.trim() || 'Sqrock Intern',
+                user_name: DOM.inputUserName.value.trim() || 'Dharmender Chauhan',
                 user_avatar: avatarVal,
                 current_theme: DOM.selectTheme.value,
                 active_persona: DOM.selectPersona.value,
